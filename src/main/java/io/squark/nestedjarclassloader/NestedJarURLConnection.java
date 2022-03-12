@@ -32,15 +32,16 @@
 package io.squark.nestedjarclassloader;
 
 import com.google.common.io.FileBackedOutputStream;
-import sun.net.www.ParseUtil;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.jar.JarEntry;
@@ -78,8 +79,9 @@ public class NestedJarURLConnection extends URLConnection implements AutoCloseab
      *
      * @param url URL to parse
      * @throws MalformedURLException
+     * @throws UnsupportedEncodingException 
      */
-    private void parseSpecs(URL url) throws MalformedURLException {
+    private void parseSpecs(URL url) throws MalformedURLException, UnsupportedEncodingException {
         String spec = url.getFile();
 
         if (spec.startsWith("jar:")) {
@@ -94,7 +96,7 @@ public class NestedJarURLConnection extends URLConnection implements AutoCloseab
         /* if ! is the last letter of the innerURL, entryName is null */
         if (++separator != spec.length()) {
             entryName = spec.substring(separator, spec.length());
-            entryName = ParseUtil.decode(entryName);
+            entryName = URLDecoder.decode(entryName, "UTF-8");
             int subEntrySeparator = entryName.indexOf("!/");
             if (subEntrySeparator != -1) {
                 subEntryName = entryName.substring(subEntrySeparator + 2, entryName.length());
