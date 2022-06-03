@@ -168,4 +168,8 @@ public class NestedJarClassLoader extends ClassLoader {
             unloaded.cleanUp();
         }
     }
+
+    protected boolean canLoadFromModule(String moduleName, String className) {
+        return true;
+    }
 }

@@ -126,17 +126,21 @@ class Module extends ClassLoader {
 
     private void addClassIfClass(InputStream inputStream, String relativePath) throws IOException {
         if (relativePath.endsWith(".class")) {
-            int len;
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            byte[] b = new byte[2048];
-
-            while ((len = inputStream.read(b)) > 0) {
-                out.write(b, 0, len);
-            }
-            out.close();
-            byte[] classBytes = out.toByteArray();
             String className = resourceToClassName(relativePath);
-            addToByteCache(className, classBytes);
+            
+            if (((NestedJarClassLoader) getParent()).canLoadFromModule(this.name, className))
+            {
+                int len;
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                byte[] b = new byte[2048];
+                
+                while ((len = inputStream.read(b)) > 0) {
+                    out.write(b, 0, len);
+                }
+                out.close();
+                byte[] classBytes = out.toByteArray();
+                addToByteCache(className, classBytes);
+            }
         }
     }
 
